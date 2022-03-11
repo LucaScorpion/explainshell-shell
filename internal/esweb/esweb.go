@@ -12,13 +12,17 @@ import (
 const ES_EXPLAIN_URL = "https://explainshell.com/explain?cmd="
 
 func GetCommandHelp(cmd string) (*CommandHelp, error) {
-	doc, err := loadDocument(cmd)
+	source := ES_EXPLAIN_URL + url.QueryEscape(cmd)
+	doc, err := loadDocument(source)
 	if err != nil {
 		return nil, err
 	}
 
-	help := &CommandHelp{}
-	help.Command = strings.TrimSpace(doc.Find("#command").Text())
+	help := &CommandHelp{
+		Source:  source,
+		Command: strings.TrimSpace(doc.Find("#command").Text()),
+	}
+
 	doc.Find("[helpref]").Each(func(_ int, sel *goquery.Selection) {
 		helpText := ""
 		if helpRef, ok := sel.Attr("helpref"); ok {
@@ -34,8 +38,8 @@ func GetCommandHelp(cmd string) (*CommandHelp, error) {
 	return help, nil
 }
 
-func loadDocument(cmd string) (*goquery.Document, error) {
-	res, err := http.Get(ES_EXPLAIN_URL + url.QueryEscape(cmd))
+func loadDocument(url string) (*goquery.Document, error) {
+	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}

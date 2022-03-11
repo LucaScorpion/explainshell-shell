@@ -1,6 +1,7 @@
 package esweb
 
 type CommandHelp struct {
+	Source  string
 	Command string
 	Parts   []*CommandPart
 }

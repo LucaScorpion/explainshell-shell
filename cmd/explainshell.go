@@ -20,7 +20,8 @@ func main() {
 }
 
 func printCommandHelp(help *esweb.CommandHelp) {
-	fmt.Println("\n" + help.Command + "\n")
+	fmt.Println("Source: " + help.Source + "\n")
+	fmt.Println(help.Command + "\n")
 
 	fmt.Println(SEPARATOR)
 	for _, part := range help.Parts {
