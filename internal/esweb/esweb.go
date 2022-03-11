@@ -4,22 +4,21 @@ import (
 	"errors"
 	"github.com/PuerkitoBio/goquery"
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 )
 
 const ES_EXPLAIN_URL = "https://explainshell.com/explain?cmd="
 
-func DoThing(cmd string) {
-	getCommandHelp(cmd)
-}
-
-func getCommandHelp(cmd string) (*CommandHelp, error) {
+func GetCommandHelp(cmd string) (*CommandHelp, error) {
 	doc, err := loadDocument(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	help := &CommandHelp{}
+	help.Command = strings.TrimSpace(doc.Find("#command").Text())
 	doc.Find("[helpref]").Each(func(_ int, sel *goquery.Selection) {
 		helpText := ""
 		if helpRef, ok := sel.Attr("helpref"); ok {
@@ -36,7 +35,7 @@ func getCommandHelp(cmd string) (*CommandHelp, error) {
 }
 
 func loadDocument(cmd string) (*goquery.Document, error) {
-	res, err := http.Get(ES_EXPLAIN_URL + cmd)
+	res, err := http.Get(ES_EXPLAIN_URL + url.QueryEscape(cmd))
 	if err != nil {
 		return nil, err
 	}
