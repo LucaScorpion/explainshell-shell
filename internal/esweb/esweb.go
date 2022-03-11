@@ -19,8 +19,13 @@ func GetCommandHelp(cmd string) (*CommandHelp, error) {
 	}
 
 	help := &CommandHelp{
-		Source:  source,
-		Command: strings.TrimSpace(doc.Find("#command").Text()),
+		Source: source,
+		Command: strings.Join(
+			doc.Find("#command .command0").Map(func(_ int, c *goquery.Selection) string {
+				return c.Text()
+			}),
+			" ",
+		),
 	}
 
 	doc.Find("[helpref]").Each(func(_ int, sel *goquery.Selection) {
