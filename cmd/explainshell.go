@@ -8,9 +8,9 @@ import (
 	"strings"
 )
 
-const SEPARATOR = "──────────"
+const separator = "──────────"
 
-const HELP_TEXT = `
+const helpText = `
 Usage: {{filename}} [options...] <command>
 
 Options:
@@ -23,6 +23,8 @@ non-option argument, or --.
 Example usage:
   {{filename}} tar xzvf archive.tar.gz
 `
+
+var COLORS = []int{32, 33, 34, 35, 36}
 
 func main() {
 	argsI := 1
@@ -76,7 +78,7 @@ func printHelp() {
 	fileName := os.Args[0]
 	fileName = fileName[strings.LastIndexByte(fileName, '/')+1:]
 
-	help := strings.TrimSpace(HELP_TEXT)
+	help := strings.TrimSpace(helpText)
 	help = strings.ReplaceAll(help, "{{filename}}", fileName)
 
 	fmt.Println(help)
@@ -86,10 +88,17 @@ func printCommandHelp(help *esweb.CommandHelp) {
 	fmt.Println("Source: " + help.Source + "\n")
 	fmt.Println(help.Command + "\n")
 
-	fmt.Println(SEPARATOR)
-	for _, part := range help.Parts {
-		fmt.Println(cmd.Bold(part.Part) + " " + part.ManPage + "\n")
+	fmt.Println(separator)
+	colorIndex := 0
+	for i, part := range help.Parts {
+		if i == 0 {
+			fmt.Println(cmd.Bold(part.Part) + " " + help.ManPage + "\n")
+		} else {
+			fmt.Println(cmd.Bold(cmd.Color(part.Part, COLORS[colorIndex])) + "\n")
+			colorIndex = (colorIndex + 1) % len(COLORS)
+		}
+
 		fmt.Println(part.Help)
-		fmt.Println(SEPARATOR)
+		fmt.Println(separator)
 	}
 }

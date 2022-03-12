@@ -9,11 +9,11 @@ import (
 	"strings"
 )
 
-const ES_EXPLAIN_URL = "https://explainshell.com/explain?cmd="
-const MP_URL = "https://manpages.ubuntu.com/manpages/jammy/en/man{{section}}/{{cmd}}.{{section}}.html"
+const esExplainUrl = "https://explainshell.com/explain?cmd="
+const mpUrl = "https://manpages.ubuntu.com/manpages/jammy/en/man{{section}}/{{cmd}}.{{section}}.html"
 
 func GetCommandHelp(cmd string) (*CommandHelp, error) {
-	source := ES_EXPLAIN_URL + url.QueryEscape(cmd)
+	source := esExplainUrl + url.QueryEscape(cmd)
 	doc, err := loadDocument(source)
 	if err != nil {
 		return nil, err
@@ -46,9 +46,9 @@ func GetCommandHelp(cmd string) (*CommandHelp, error) {
 		if len(firstPartName) >= 3 && firstPartName[len(firstPartName)-3] == '(' && firstPartName[len(firstPartName)-1] == ')' {
 			manPageSection := string(firstPartName[len(firstPartName)-2])
 			cmdName := firstPartName[:len(firstPartName)-3]
-			manPage := strings.ReplaceAll(MP_URL, "{{section}}", manPageSection)
+			manPage := strings.ReplaceAll(mpUrl, "{{section}}", manPageSection)
 			manPage = strings.ReplaceAll(manPage, "{{cmd}}", cmdName)
-			help.Parts[0].ManPage = manPage
+			help.ManPage = manPage
 		}
 	}
 
