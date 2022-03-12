@@ -10,7 +10,7 @@ import (
 )
 
 const esExplainUrl = "https://explainshell.com/explain?cmd="
-const mpUrl = "https://manpages.ubuntu.com/manpages/jammy/en/man{{section}}/{{cmd}}.{{section}}.html"
+const mpUrl = "https://manpages.ubuntu.com/manpages/jammy/en/man{{section}}/{{title}}.{{section}}.html"
 
 func GetCommandHelp(cmd string) (*CommandHelp, error) {
 	source := esExplainUrl + url.QueryEscape(cmd)
@@ -35,15 +35,12 @@ func GetCommandHelp(cmd string) (*CommandHelp, error) {
 		})
 	})
 
-	if len(help.Parts) >= 1 {
-		firstPartName := help.Parts[0].Part
-		if len(firstPartName) >= 3 && firstPartName[len(firstPartName)-3] == '(' && firstPartName[len(firstPartName)-1] == ')' {
-			manPageSection := string(firstPartName[len(firstPartName)-2])
-			cmdName := firstPartName[:len(firstPartName)-3]
-			manPage := strings.ReplaceAll(mpUrl, "{{section}}", manPageSection)
-			manPage = strings.ReplaceAll(manPage, "{{cmd}}", cmdName)
-			help.ManPage = manPage
-		}
+	if explainLink, ok := doc.Find("#command .simplecommandstart a").Attr("href"); ok {
+		// "", "explain", manPageSection, manPageTitle
+		linkParts := strings.Split(explainLink, "/")
+		manPage := strings.ReplaceAll(mpUrl, "{{section}}", linkParts[2])
+		manPage = strings.ReplaceAll(manPage, "{{title}}", linkParts[3])
+		help.ManPage = manPage
 	}
 
 	return help, nil
