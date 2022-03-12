@@ -17,6 +17,9 @@ Options:
   --            Stop parsing options and interpret the rest as command input.
   -h, --help    Print this help text.
 
+The CLI will stop trying to parse options as soon as it encounters a
+non-option argument, or --.
+
 Example usage:
   {{filename}} tar xzvf archive.tar.gz
 `
@@ -53,6 +56,12 @@ func main() {
 		input += os.Args[argsI] + " "
 	}
 	input = strings.TrimSpace(input)
+
+	if len(input) == 0 {
+		fmt.Println("No command given")
+		printHelp()
+		os.Exit(1)
+	}
 
 	help, err := esweb.GetCommandHelp(input)
 	if err != nil {
