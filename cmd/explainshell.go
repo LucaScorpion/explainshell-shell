@@ -14,8 +14,9 @@ const helpText = `
 Usage: {{filename}} [options...] <command>
 
 Options:
-  --            Stop parsing options and interpret the rest as command input.
-  -h, --help    Print this help text.
+  --                Stop parsing options and interpret the rest as command input.
+  -h, --help        Print this help text.
+  -n, --no-color    Disable color output.
 
 The CLI will stop trying to parse options as soon as it encounters a
 non-option argument, or --.
@@ -27,6 +28,7 @@ Example usage:
 var COLORS = []int{32, 33, 34, 35, 36}
 
 func main() {
+	colors := true
 	argsI := 1
 	for ; argsI < len(os.Args); argsI++ {
 		arg := os.Args[argsI]
@@ -46,6 +48,10 @@ func main() {
 		case "--help":
 			printHelp()
 			return
+		case "-n":
+			fallthrough
+		case "--no-color":
+			colors = false
 		default:
 			fmt.Println("Invalid option: " + arg)
 			printHelp()
@@ -71,7 +77,7 @@ func main() {
 		os.Exit(2)
 	}
 
-	printCommandHelp(help)
+	printCommandHelp(help, colors)
 }
 
 func printHelp() {
@@ -84,7 +90,7 @@ func printHelp() {
 	fmt.Println(help)
 }
 
-func printCommandHelp(help *esweb.CommandHelp) {
+func printCommandHelp(help *esweb.CommandHelp, colors bool) {
 	fmt.Println("Source: " + help.Source + "\n")
 	fmt.Println(help.Command + "\n")
 
@@ -94,11 +100,18 @@ func printCommandHelp(help *esweb.CommandHelp) {
 		if i == 0 {
 			fmt.Println(cmd.Bold(part.Part) + " " + help.ManPage + "\n")
 		} else {
-			fmt.Println(cmd.Bold(cmd.Color(part.Part, COLORS[colorIndex])) + "\n")
+			fmt.Println(cmd.Bold(colorText(part.Part, COLORS[colorIndex], colors)) + "\n")
 			colorIndex = (colorIndex + 1) % len(COLORS)
 		}
 
 		fmt.Println(part.Help)
 		fmt.Println(separator)
 	}
+}
+
+func colorText(text string, color int, colors bool) string {
+	if !colors {
+		return text
+	}
+	return cmd.Color(text, color)
 }
