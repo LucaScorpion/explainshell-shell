@@ -92,10 +92,23 @@ func printHelp() {
 
 func printCommandHelp(help *esweb.CommandHelp, colors bool) {
 	fmt.Println("Source: " + help.Source + "\n")
-	fmt.Println(help.Command + "\n")
 
-	fmt.Println(separator)
 	colorIndex := 0
+	for i, part := range help.Parts {
+		if i == 0 {
+			fmt.Print(cmd.Bold(part.Part))
+		} else {
+			fmt.Print(cmd.Bold(colorText(part.Part, COLORS[colorIndex], colors)))
+			colorIndex = (colorIndex + 1) % len(COLORS)
+		}
+
+		if i < len(help.Parts)-1 {
+			fmt.Print(" ")
+		}
+	}
+
+	fmt.Println("\n\n" + separator)
+	colorIndex = 0
 	for i, part := range help.Parts {
 		if i == 0 {
 			fmt.Println(cmd.Bold(part.Part) + " " + help.ManPage + "\n")
