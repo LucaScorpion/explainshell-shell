@@ -32,3 +32,5 @@ go fmt ./...
 # Build the binary.
 go build ./cmd/explainshell.go
 ```
+
+You can also build all the binaries (for Linux, Darwin, and Windows) using the `build.sh` script.
