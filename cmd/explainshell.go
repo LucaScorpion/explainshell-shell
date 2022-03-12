@@ -88,7 +88,7 @@ func printCommandHelp(help *esweb.CommandHelp) {
 
 	fmt.Println(SEPARATOR)
 	for _, part := range help.Parts {
-		fmt.Println(cmd.Bold(part.Part) + "\n")
+		fmt.Println(cmd.Bold(part.Part) + " " + part.ManPage + "\n")
 		fmt.Println(part.Help)
 		fmt.Println(SEPARATOR)
 	}

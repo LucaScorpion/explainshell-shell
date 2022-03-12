@@ -7,6 +7,7 @@ type CommandHelp struct {
 }
 
 type CommandPart struct {
-	Part string
-	Help string
+	Part    string
+	Help    string
+	ManPage string
 }
