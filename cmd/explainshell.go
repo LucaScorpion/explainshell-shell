@@ -93,6 +93,11 @@ func printHelp() {
 func printCommandHelp(help *esweb.CommandHelp, colors bool) {
 	fmt.Println("Source: " + help.Source + "\n")
 
+	if len(help.Parts) == 0 {
+		fmt.Println(cmd.Bold("No man page found."))
+		return
+	}
+
 	colorIndex := 0
 	for i, part := range help.Parts {
 		if i == 0 {
