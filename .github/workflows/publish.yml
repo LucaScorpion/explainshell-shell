@@ -1,0 +1,43 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            filename: explainshell-linux-amd64
+          - goos: darwin
+            goarch: amd64
+            filename: explainshell-darwin-amd64
+          - goos: darwin
+            goarch: arm64
+            goarm: 7
+            filename: explainshell-darwin-arm7
+          - goos: windows
+            goarch: amd64
+            filename: explainshell-windows-amd64.exe
+    env:
+      CGO_ENABLED: 0
+      GOOS: ${{ matrix.goos }}
+      GOARCH: ${{ matrix.goarch }}
+      GOARM: ${{ matrix.goarm }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+      - run: go build -o ${{ matrix.filename }} ./cmd/explainshell.go
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: explainshell-*
+          generate_release_notes: true
